@@ -1,2 +1,2 @@
-# NestedPolicyScheduling
+# Legislature
 Nested policy scheduling simulation.

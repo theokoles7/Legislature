@@ -1,2 +1,11 @@
 # BUILD FILES
 __pycache__
+
+# LOG FILES
+logs
+
+# OUTPUT FILES
+output
+
+# SCRATCH FILES
+scratch*
