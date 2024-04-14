@@ -6,11 +6,12 @@ class Job():
     
     job_id: int = itertools.count()
     
-    def __init__(self, arrival, burst, priority):
+    def __init__(self, arrival, burst, priority, deadline):
         self.id:        int =   next(Job.job_id)
         self.arrival:   int =   int(arrival)
         self.burst:     int =   int(burst)
         self.priority:  int =   int(priority)
+        self.deadline:  int =   int(deadline)
         self.start:     int =   0
         self.end:       int =   0
         self.wait:      int =   0
@@ -27,7 +28,7 @@ def initialize_job_lists() -> None:
     - Each list has 10 to the power of the list number jobs (i.e., 10, 100, etc.)
     - Each job will be assigned an arrival time, burst time, and priority
     - Arrival time is randomly incremented based on coin toss as loop progresses
-    - Burst time is in random range of 0 - 100
+    - Burst time is in random range of 1 - 100
     - Priority is randomly assigned in the range of 1 - 3, with 1 being the highest priority
     """
     for i in [1, 2, 3, 4]:
@@ -36,7 +37,7 @@ def initialize_job_lists() -> None:
 
             writer: csv.writer =    csv.writer(file_out)
 
-            writer.writerow(["ARRIVAL TIME", "BURST TIME", "PRIORITY"])
+            writer.writerow(["ARRIVAL TIME", "BURST TIME", "PRIORITY", "DEADLINE"])
             
             arrival_time = 0
 
@@ -44,7 +45,7 @@ def initialize_job_lists() -> None:
                 
                 arrival_time += random.randint(0, 1)
 
-                writer.writerow([arrival_time, random.randint(0, 100), random.randint(1, 3)])
+                writer.writerow([arrival_time, random.randint(1, 100), random.randint(1, 3), arrival_time + random.randint(1, 20)])
 
 def get_job_list(list_number: int, sort_key: tuple = None) -> list:
     """Read job list file into list.
@@ -59,7 +60,7 @@ def get_job_list(list_number: int, sort_key: tuple = None) -> list:
     with open(f"input/job_list_{list_number}.csv", "r") as job_list_in:
         
         # Read the file into a list, without the header
-        job_list = [Job(x, y, z) for x, y, z in list(csv.reader(job_list_in))[1:]]
+        job_list = [Job(w, x, y, z) for w, x, y, z in list(csv.reader(job_list_in))[1:]]
         
     return sorted(job_list, key = sort_key)
 
@@ -88,7 +89,7 @@ def make_graph() -> None:
             print([stat[1] for stat in stats])
             
             # Initialize bar plot
-            fig = plt.figure(figsize=(10, 10))
+            fig = plt.figure(figsize=(20, 10))
             
             for x, y in stats:
                 
@@ -141,11 +142,16 @@ for list_number in [1, 2, 3, 4]:
         
         # Define sort keys
         sort_keys = {
-            "arrival":                  lambda job: (job.arrival),
-            "arrival, priority":        lambda job: (job.arrival, job.priority),
-            "arrival, burst":           lambda job: (job.arrival, job.burst),
-            "arrival, priority, burst": lambda job: (job.arrival, job.priority, job.burst),
-            "arrival, burst, priority": lambda job: (job.arrival, job.burst, job.priority),
+            "arrival":                      lambda job: (job.arrival),
+            "arrival, priority":            lambda job: (job.arrival, job.priority),
+            "arrival, burst":               lambda job: (job.arrival, job.burst),
+            "arrival, deadline":            lambda job: (job.arrival, job.deadline),
+            "arrival, priority, burst":     lambda job: (job.arrival, job.priority, job.burst),
+            "arrival, priority, deadline":  lambda job: (job.arrival, job.priority, job.deadline),
+            "arrival, burst, priority":     lambda job: (job.arrival, job.burst, job.priority),
+            "arrival, burst, deadline":     lambda job: (job.arrival, job.burst, job.deadline),
+            "arrival, deadline, burst":     lambda job: (job.arrival, job.deadline, job.burst),
+            "arrival, deadline, priority":  lambda job: (job.arrival, job.deadline, job.priority)
         }
         
         # For each sort key
@@ -167,7 +173,7 @@ for list_number in [1, 2, 3, 4]:
                 results_writer = csv.writer(results_file)
                 
                 # Write header
-                results_writer.writerow(["Job ID", "Arrival", "Burst", "Priority", "Start", "End", "Turn Around"])
+                results_writer.writerow(["Job ID", "Arrival", "Burst", "Priority", "Deadline", "Start", "End", "Turn Around"])
                 
                 # Rest job IDs
                 Job.job_id = itertools.count()
@@ -200,7 +206,7 @@ for list_number in [1, 2, 3, 4]:
                     job.wait = (job.end - job.arrival)
                     
                     # Record job statistics
-                    results_writer.writerow([job.id, job.arrival, job.burst, job.priority, job.start, job.end, job.wait])
+                    results_writer.writerow([job.id, job.arrival, job.burst, job.priority, job.deadline, job.start, job.end, job.wait])
                     
                     # Update turn around time tracker
                     turn_around_times += job.wait

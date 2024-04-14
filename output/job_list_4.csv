@@ -1,6 +1,11 @@
 Sort Key,Average Turn Around
-arrival,247047.2265
-arrival_priority,247047.4567
-arrival_burst,247031.134
-arrival_priority_burst,247041.8158
-arrival_burst_priority,247031.134
+arrival,249490.3742
+arrival_priority,249490.8053
+arrival_burst,249473.9368
+arrival_deadline,249490.8515
+arrival_priority_burst,249485.3368
+arrival_priority_deadline,249490.8305
+arrival_burst_priority,249473.9368
+arrival_burst_deadline,249473.9368
+arrival_deadline_burst,249490.0578
+arrival_deadline_priority,249490.9392
